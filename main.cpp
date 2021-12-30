@@ -22,11 +22,12 @@ struct uzytkownik
 vector <ksiazkaAdresowa> kontakty;
 vector <uzytkownik> uzytkownicy;
 
-void zapisDoPlikuTekstowego( ksiazkaAdresowa adresat,int iloscKontaktow )
+void zapisDoPlikuTekstowego( ksiazkaAdresowa adresat, int numerPozycjiUzytkownika )
 {
     fstream plik;
-    plik.open("KsiazkaAdresowaKS.txt", ios::out | ios::app);
-    plik<<adresat.ID<< "|";                                                           //ZAPIS
+    plik.open("Adresaci.txt", ios::out | ios::app);
+    plik<<adresat.ID<< "|";
+    plik<<uzytkownicy[numerPozycjiUzytkownika].idUzytkownika<< "|";                                                           //ZAPIS
     plik<<adresat.imie<< "|";
     plik<<adresat.nazwisko<< "|";
     plik<<adresat.nrTelefonu<< "|";
@@ -35,7 +36,7 @@ void zapisDoPlikuTekstowego( ksiazkaAdresowa adresat,int iloscKontaktow )
     plik.close();
 }
 
-int odczytZPlikuDoProgramu( int iloscKontaktow )                                        //ODCZYT
+int odczytZPlikuDoProgramu( int iloscKontaktow, int numerPozycjiUzytkownika )                                        //ODCZYT
 {
     fstream plik;
     string linia;
@@ -43,15 +44,23 @@ int odczytZPlikuDoProgramu( int iloscKontaktow )                                
 
     if(plik.good() == true)
     {
-        plik.open("KsiazkaAdresowaKS.txt", ios::in);
+        plik.open("Adresaci.txt", ios::in);
         while(getline(plik,linia))
         {
-            string imie = "", nazwisko = "", nrTelefonu = "", email = "", adres = "", ID = "";
+            string imie = "", nazwisko = "", nrTelefonu = "", email = "", adres = "", ID = "", idUzytkownika = "";
+            int idUzytkownikaZamienioneNaInt = 0;
             int pozycjaLitery = 0;
 
             while( linia[ pozycjaLitery ] != '|')
             {
                 ID = ID + linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                idUzytkownika = idUzytkownika + linia[ pozycjaLitery ];
                 pozycjaLitery++;
             }
             pozycjaLitery++;
@@ -89,47 +98,143 @@ int odczytZPlikuDoProgramu( int iloscKontaktow )                                
                 adres = adres +  linia[ pozycjaLitery ];
                 pozycjaLitery++;
             }
+
+            idUzytkownikaZamienioneNaInt = atoi(idUzytkownika.c_str());
             adresat.ID = atoi(ID.c_str());
             adresat.imie = imie;
             adresat.nazwisko = nazwisko;
             adresat.nrTelefonu = nrTelefonu;
             adresat.email = email;
             adresat.adres = adres;
+
+            if( idUzytkownikaZamienioneNaInt == uzytkownicy[numerPozycjiUzytkownika].idUzytkownika )
+            {
             kontakty.push_back( adresat );
             iloscKontaktow++;
+            }
         }
         plik.close();
         return iloscKontaktow;
     }
 }
 
-void zastapDaneWPlikuTekstowym()                                                          //ZASTAP ZAPIS
+void zastapDaneWPlikuTekstowym( int numerPozycjiUzytkownika, int idKontaktu )                                                          //ZASTAP ZAPIS
 {
+    int sprawdzIdUzytkownika = 0;
+    int sprawdzIdKontaktu = 0;
+    int sprawdzPozycjeKontaktow = 0;
     ksiazkaAdresowa adresat;
+    fstream plik;
     fstream plik2;
-    plik2.open("KsiazkaAdresowaPrzechowanieDanych.txt", ios::out);
+    string linia;
 
-    for( int i = 0; i < kontakty.size(); i++ )
+    if(plik.good() == true)
     {
-        adresat = kontakty[i];
-        plik2<<adresat.ID<< "|";
-        plik2<<adresat.imie<< "|";
-        plik2<<adresat.nazwisko<< "|";
-        plik2<<adresat.nrTelefonu<< "|";
-        plik2<<adresat.email<< "|";
-        plik2<<adresat.adres<< "|" << endl;
+        plik.open("Adresaci.txt", ios::in);
+        plik2.open("AdresaciPrzechowanieDanych.txt", ios::out);
+        while(getline(plik,linia))
+        {
+          string imie = "", nazwisko = "", nrTelefonu = "", email = "", adres = "", ID = "", sprawdzIdUzytkownika = "";
+          int sprawdzIdUzytkownikaZamienioneNaInt = 0;
+          int pozycjaLitery = 0;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                ID = ID + linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                sprawdzIdUzytkownika = sprawdzIdUzytkownika + linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                imie = imie +  linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                nazwisko = nazwisko +  linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                nrTelefonu = nrTelefonu +  linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                email = email +  linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                adres = adres +  linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+
+            sprawdzIdUzytkownikaZamienioneNaInt = atoi(sprawdzIdUzytkownika.c_str());
+            sprawdzIdKontaktu = atoi(ID.c_str());
+            adresat.ID = atoi(ID.c_str());
+            adresat.imie = imie;
+            adresat.nazwisko = nazwisko;
+            adresat.nrTelefonu = nrTelefonu;
+            adresat.email = email;
+            adresat.adres = adres;
+
+            if( sprawdzIdUzytkownikaZamienioneNaInt == uzytkownicy[numerPozycjiUzytkownika].idUzytkownika && sprawdzIdKontaktu != idKontaktu )
+            {
+                plik2<<kontakty[sprawdzPozycjeKontaktow].ID<< "|";
+                plik2<<uzytkownicy[numerPozycjiUzytkownika].idUzytkownika<< "|";
+                plik2<<kontakty[sprawdzPozycjeKontaktow].imie<< "|";
+                plik2<<kontakty[sprawdzPozycjeKontaktow].nazwisko<< "|";
+                plik2<<kontakty[sprawdzPozycjeKontaktow].nrTelefonu<< "|";
+                plik2<<kontakty[sprawdzPozycjeKontaktow].email<< "|";
+                plik2<<kontakty[sprawdzPozycjeKontaktow].adres<< "|" << endl;
+                sprawdzPozycjeKontaktow++;
+            }
+
+            else if ( sprawdzIdUzytkownikaZamienioneNaInt != uzytkownicy[numerPozycjiUzytkownika].idUzytkownika && sprawdzIdKontaktu != idKontaktu )
+            {
+                plik2<<adresat.ID<< "|";
+                plik2<<sprawdzIdUzytkownika<< "|";
+                plik2<<adresat.imie<< "|";
+                plik2<<adresat.nazwisko<< "|";
+                plik2<<adresat.nrTelefonu<< "|";
+                plik2<<adresat.email<< "|";
+                plik2<<adresat.adres<< "|" << endl;
+            }
+        }
     }
 
+
     plik2.close();
-    remove("KsiazkaAdresowaKS.txt");
-    rename("KsiazkaAdresowaPrzechowanieDanych.txt", "KsiazkaAdresowaKS.txt");
+    plik.close();
+    remove("Adresaci.txt");
+    rename("AdresaciPrzechowanieDanych.txt", "Adresaci.txt");
 }
 
-int dodajOsobe( int iloscKontaktow )
+int dodajOsobe( int iloscKontaktow, int numerPozycjiUzytkownika )
 {
     ksiazkaAdresowa adresat;
+    ksiazkaAdresowa adresat2;
     string imie, nazwisko, nrTelefonu, email, adres;
     int dlugoscWektora = kontakty.size();
+    int poprzednieId = 0;
+    //int sprawdzamIdUzytkownika = 0;
 
     system("cls");
     cout << "Podaj imie dodawanej osoby: ";
@@ -171,7 +276,76 @@ int dodajOsobe( int iloscKontaktow )
     adresat.nrTelefonu = nrTelefonu;
     adresat.email = email;
     adresat.adres = adres;
+    //                                                                                                       Dziwne rozwiazanie, zamien w funkcje
+    fstream plik;
+    string linia;
 
+    if(plik.good() == true)
+    {
+        plik.open("Adresaci.txt", ios::in);
+        while(getline(plik,linia))
+        {
+            string imie = "", nazwisko = "", nrTelefonu = "", email = "", adres = "", ID = "", idUzytkownika = "";
+            int idUzytkownikaZamienioneNaInt = 0;
+            int pozycjaLitery = 0;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                ID = ID + linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                idUzytkownika = idUzytkownika + linia[ pozycjaLitery ];
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                pozycjaLitery++;
+            }
+            pozycjaLitery++;
+
+            while( linia[ pozycjaLitery ] != '|')
+            {
+                pozycjaLitery++;
+            }
+
+            //sprawdzamIdUzytkownika = atoi(idUzytkownika.c_str());
+            adresat2.ID = atoi(ID.c_str());
+            poprzednieId = atoi(ID.c_str());
+
+        }
+        plik.close();
+
+if( poprzednieId > 0 )
+        {
+            adresat.ID = adresat2.ID + 1;
+        }
+    //
+else
+{
     if( iloscKontaktow == 0 )
     {
         adresat.ID = 1;
@@ -180,16 +354,17 @@ int dodajOsobe( int iloscKontaktow )
     {
         adresat.ID = kontakty[ dlugoscWektora - 1 ].ID + 1;
     }
-
+}
     kontakty.push_back( adresat );
 
     cout << endl;
     cout << "Pomyslnie dodano osobe do ksiazki adresowej!" << endl;
     Sleep(2500);
 
-    zapisDoPlikuTekstowego( adresat, iloscKontaktow);
+    zapisDoPlikuTekstowego( adresat, numerPozycjiUzytkownika );
 
     return iloscKontaktow+1;
+}
 }
 
 void wyszukajPoImieniu( int iloscKontaktow )
@@ -267,7 +442,7 @@ void wyswietlWszystkichAdresatow( int iloscKontaktow )
     int numerPozycji = 0;
     system("cls");
 
-    for(int i = 0; i < iloscKontaktow; i++)
+    for(int i = 0; i < kontakty.size(); i++)
     {
         cout << numerPozycji+1 << ". " << endl;
         cout << "Numer ID: " << kontakty[i].ID << endl;
@@ -290,11 +465,12 @@ void wyswietlWszystkichAdresatow( int iloscKontaktow )
     getchar();
 }
 
-void edytujAdresata()
+void edytujAdresata( int numerPozycjiUzytkownika )
 {
     int ID = 0;
     int iloscWystapien = 0;
     int numerPozycjiWWektorze = 0;
+    int idKontaktu = 0; //blank
     string imie, nazwisko, email, nrTelefonu, adres;
     system("cls");
     cout << "Podaj ID adresata ktorego chcesz edytowac" << endl;
@@ -346,14 +522,14 @@ void edytujAdresata()
                 cout << "Wprowadz nowe imie: ";
                 cin >> imie;
                 kontakty[ numerPozycjiWWektorze ].imie = imie;
-                zastapDaneWPlikuTekstowym();
+                zastapDaneWPlikuTekstowym( numerPozycjiUzytkownika, idKontaktu );
                 break;
 
             case '2':
                 cout << "Wprowadz nowe nazwisko: ";
                 cin >> nazwisko;
                 kontakty[ numerPozycjiWWektorze ].nazwisko = nazwisko;
-                zastapDaneWPlikuTekstowym();
+                zastapDaneWPlikuTekstowym( numerPozycjiUzytkownika, idKontaktu );
                 break;
 
             case '3':
@@ -361,14 +537,14 @@ void edytujAdresata()
                 cin.sync();
                 getline(cin, nrTelefonu);
                 kontakty[ numerPozycjiWWektorze ].nrTelefonu = nrTelefonu;
-                zastapDaneWPlikuTekstowym();
+                zastapDaneWPlikuTekstowym( numerPozycjiUzytkownika, idKontaktu );
                 break;
 
             case '4':
                 cout << "Podaj nowy adres e-mail: ";
                 cin >> email;
                 kontakty[ numerPozycjiWWektorze ].email = email;
-                zastapDaneWPlikuTekstowym();
+                zastapDaneWPlikuTekstowym( numerPozycjiUzytkownika, idKontaktu );
                 break;
 
             case '5':
@@ -376,18 +552,19 @@ void edytujAdresata()
                 cin.sync();
                 getline(cin, adres);
                 kontakty[ numerPozycjiWWektorze ].adres = adres;
-                zastapDaneWPlikuTekstowym();
+                zastapDaneWPlikuTekstowym( numerPozycjiUzytkownika, idKontaktu );
                 break;
             }
         }
     }
 }
 
-int usunAdresata ( int iloscKontaktow )
+int usunAdresata ( int iloscKontaktow, int numerPozycjiUzytkownika )
 {
     int ID = 0;
     int iloscWystapien = 0;
     int numerPozycjiWWektorze = 0;
+    int idKontaktu = 0;
     char wybor;
     int zmiennaSprawdzajaca = 0;
 
@@ -426,8 +603,9 @@ int usunAdresata ( int iloscKontaktow )
 
         if( wybor == 't' )
         {
+            idKontaktu = ID;
             kontakty.erase(kontakty.begin() + numerPozycjiWWektorze);
-            zastapDaneWPlikuTekstowym();
+            zastapDaneWPlikuTekstowym( numerPozycjiUzytkownika, idKontaktu );
             zmiennaSprawdzajaca++;
         }
         else if( wybor == 'n' )
@@ -583,7 +761,7 @@ int rejestracja()
     return id;
 }
 
-int logowanie()                                                  //dodaj mozliwosc wyjscia przy wpisywaniu loginu i hasla zeby ktos tam nie utknal
+int logowanie()
 {
     string nazwa, haslo;
     int id = 0;
@@ -684,7 +862,6 @@ int ekranLogowania()
 {
     int idUzytkownika = 0;
     char wybor;
-    //while (wybor != '1' || wybor!= '2' || wybor!= '3')
     while ( idUzytkownika == 0 )
     {
         system("cls");
@@ -726,6 +903,18 @@ string sprawdzamNazweUzytkownika( int idUzytkownika )
         if( uzytkownicy[i].idUzytkownika == idUzytkownika )
         {
             return uzytkownicy[i].nazwa;
+            break;
+        }
+    }
+}
+
+int sprawdzNumerPozycjiUzytkownika( int idUzytkownika )
+{
+    for(int i = 0; i < uzytkownicy.size(); i++)
+    {
+        if( uzytkownicy[i].idUzytkownika == idUzytkownika )
+        {
+            return i;
             break;
         }
     }
@@ -777,7 +966,7 @@ void zmienHaslo( int idUzytkownika )
         uzytkownicy[ktoryUzytkownik].haslo = noweHaslo;
         system("cls");
         cout << "Haslo zostalo poprawnie zmienione!" << endl;
-        nadpiszUzytkownikow ();                             //TU
+        nadpiszUzytkownikow ();
         system("pause");
     }
 
@@ -790,8 +979,8 @@ int main()
     int iloscKontaktow = 0;
     char wybor;
     odczytUzytkownikow();
-    iloscKontaktow = odczytZPlikuDoProgramu( iloscKontaktow );
     int idUzytkownika = 0;
+    int numerPozycjiUzytkownika = 0;
     string nazwa;
 
     while (idUzytkownika == 0 )
@@ -802,11 +991,14 @@ int main()
             return 0;
             return 0;
         }
+        numerPozycjiUzytkownika = sprawdzNumerPozycjiUzytkownika( idUzytkownika );
+        iloscKontaktow = odczytZPlikuDoProgramu( iloscKontaktow, numerPozycjiUzytkownika );
     }
 
     while( idUzytkownika != 0 )
     {
         nazwa = sprawdzamNazweUzytkownika( idUzytkownika );
+
         system("cls");
         cout << "KSIAZKA ADRESOWA" << "                  Zalogowano jako: " << nazwa << endl;
         cout << "1.Dodaj adresata" << endl;
@@ -823,7 +1015,7 @@ int main()
 
         if(wybor == '1')
         {
-            iloscKontaktow = dodajOsobe( iloscKontaktow );
+            iloscKontaktow = dodajOsobe( iloscKontaktow, numerPozycjiUzytkownika );
         }
         else if (wybor == '2')
         {
@@ -839,11 +1031,11 @@ int main()
         }
         else if (wybor == '5')
         {
-            iloscKontaktow = usunAdresata( iloscKontaktow );
+            iloscKontaktow = usunAdresata( iloscKontaktow, numerPozycjiUzytkownika );                        //dziala wszystko poza usuwaniem
         }
         else if (wybor == '6')
         {
-            edytujAdresata();
+            edytujAdresata( numerPozycjiUzytkownika );
         }
         else if (wybor == '7')
         {
@@ -852,6 +1044,9 @@ int main()
         else if (wybor == '8')
         {
             idUzytkownika = ekranLogowania();
+            kontakty.clear();
+            numerPozycjiUzytkownika = sprawdzNumerPozycjiUzytkownika( idUzytkownika );
+            iloscKontaktow = odczytZPlikuDoProgramu( iloscKontaktow, numerPozycjiUzytkownika );
         }
         else if (wybor == '9')
         {
