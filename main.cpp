@@ -276,7 +276,7 @@ int dodajOsobe( int iloscKontaktow, int numerPozycjiUzytkownika )
     adresat.nrTelefonu = nrTelefonu;
     adresat.email = email;
     adresat.adres = adres;
-    //                                                                                                       Dziwne rozwiazanie, zamien w funkcje
+    //                                                                                                       zamien w funkcje
     fstream plik;
     string linia;
 
