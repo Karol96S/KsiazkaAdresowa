@@ -692,7 +692,6 @@ int rejestracja()
     int iloscUzytkownikow = uzytkownicy.size();
     int id = 0;
     int sprawdzamCzyNazwaJestZajeta = 0;
-    int sprawdzamCzyHasloJestZajete = 0;
     while ( id == 0 )
     {
         while ( sprawdzamCzyNazwaJestZajeta == 0 )
@@ -719,28 +718,10 @@ int rejestracja()
 
         }
 
-        while ( sprawdzamCzyHasloJestZajete == 0 )
-        {
             system("cls");
             cout << "Prosze podac haslo: ";
             cin >> haslo;
-            sprawdzamCzyHasloJestZajete = 1;
 
-            if( iloscUzytkownikow > 0 )
-            {
-                for (int i = 0; i < iloscUzytkownikow; i++)
-                {
-                    if( uzytkownicy[i].haslo == haslo )
-                    {
-                        cout << endl;
-                        cout << "Bledne haslo!" << endl;
-                        sprawdzamCzyHasloJestZajete = 0;
-                        system("pause");
-                        break;
-                    }
-                }
-            }
-        }
         nowyUzytkownik.nazwa = nazwa;
         nowyUzytkownik.haslo = haslo;
         if ( uzytkownicy.size() == 0 )
@@ -759,6 +740,11 @@ int rejestracja()
     uzytkownicy.push_back( nowyUzytkownik );
 
     return id;
+
+    system ("cls");
+    cout << "Pomyslnie zarejestrowano nowego uzytkownika!" << endl;
+    cout << endl;
+    system("pause");
 }
 
 int logowanie()
@@ -860,9 +846,9 @@ int logowanie()
 
 int ekranLogowania()
 {
-    int idUzytkownika = 0;
+    int idUzytkownika = -1;
     char wybor;
-    while ( idUzytkownika == 0 )
+    while (1)
     {
         system("cls");
         cout << "1. Logowanie" << endl;
@@ -879,11 +865,10 @@ int ekranLogowania()
         else if (wybor == '2')
         {
             idUzytkownika = rejestracja();
-            break;
         }
         else if (wybor == '3')
         {
-            idUzytkownika = -1;
+            break;
         }
         else
         {
@@ -892,8 +877,8 @@ int ekranLogowania()
             system("pause");
         }
 
-        return idUzytkownika;
     }
+    return idUzytkownika;
 }
 
 string sprawdzamNazweUzytkownika( int idUzytkownika )
@@ -1044,9 +1029,16 @@ int main()
         else if (wybor == '8')
         {
             idUzytkownika = ekranLogowania();
+            if( idUzytkownika == -1 )
+            {
+                break;
+            }
+            else
+            {
             kontakty.clear();
             numerPozycjiUzytkownika = sprawdzNumerPozycjiUzytkownika( idUzytkownika );
             iloscKontaktow = odczytZPlikuDoProgramu( iloscKontaktow, numerPozycjiUzytkownika );
+            }
         }
         else if (wybor == '9')
         {
